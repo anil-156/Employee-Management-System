@@ -139,7 +139,7 @@ const autoCheckOut = inngest.createFunction(
             await step.run("send-reminder-emails",async()=>{
                 const emailPromises = absentEmployees.map((emp)=>{
                     //send email
-                    sendEmail({
+                   return sendEmail({
                         to:emp.email,
                         subject:`Attendance reminder please mark your attendance`,
                         body:`<div style="max-width: 600px; font-family: Arial, sans-serif;">
