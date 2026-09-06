@@ -18,9 +18,7 @@ const app = express()
 const PORT = process.env.PORT || 4000;
 
 //Middleware
-app.use(cors({
-    origin: "https://quick-ems-6qnt-eqwvxn97-hanils-projects-063555b5.vercel.app"
-}))
+app.use(cors())
 app.use(express.json())
 app.use(multer().none())
 
