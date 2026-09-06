@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast"
 import { Navigate, Route, Routes } from "react-router-dom"
 import LoginLanding from "./pages/LoginLanding"
-import Dashboard from "./pages/dashboard"
+import Dashboard from "./pages/Dashboard"
 import Layout from "./pages/Layout"
 import Employees from "./pages/Employees"
 import Attendance from "./pages/Attendance"
