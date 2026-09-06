@@ -70,7 +70,7 @@ export const updateEmployees = async(req,res)=>{
     try {
         const {id} = req.params;
         const {firstName, lastName, email, phone, position, department,
-             basicSalary, allowances, deductions, password, role, bio, employmentStatus} = req.body;
+             basicSalary, allowances, deductions, password, role, bio, joinDate, employmentStatus} = req.body;
 
         const employee = await Employee.findById(id);
         if (!employee) return res.status(404).json({error:"Employee Not found"})
@@ -85,7 +85,8 @@ export const updateEmployees = async(req,res)=>{
             basicSalary: Number(basicSalary) || 0,
             allowances: Number(allowances) || 0,
             deductions: Number(deductions) || 0,
-            employmentStatus: employmentStatus || "Active",
+            joinDate: new Date(joinDate),
+            employmentStatus: employmentStatus || "ACTIVE",
             bio: bio || "",
         })
 
@@ -100,6 +101,7 @@ export const updateEmployees = async(req,res)=>{
         if(error.code === 11000){
             return res.status(400).json({error:"Email already exists"})
         }
+        console.error("Update employee error:", error);
         return res.status(500).json({error:"Failed to update employee"});
     }
 }
