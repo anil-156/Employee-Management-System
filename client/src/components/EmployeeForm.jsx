@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { DEPARTMENTS } from "../assets/assets"
 import { Loader2 } from "lucide-react"
-
+import api from "../api/axios"
+import toast from "react-hot-toast"
 
 const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
     const navigate = useNavigate()
@@ -10,6 +11,22 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
     const isEditMore = !!initialData
     const handleSubmit = async(e)=>{
         e.preventDefault()
+        setLoading(true)
+        const formData = new FormData(e.currentTarget);
+        if(isEditMore){
+            const pwd = formData.get("password")
+            if(!pwd) formData.delete("password")
+        }
+    try {
+        const url = isEditMore ? `/employees/${initialData.id}` : "/employees";
+        const method = isEditMore ? "put" : "post";
+        await api[method](url,formData)
+        onSuccess ? onSuccess() : navigate("/employees")
+    } catch (error) {
+        toast.error(error.response?.data?.error || error.message);
+    }finally{
+        setLoading(false);
+    }
     }
 
   return (
@@ -21,14 +38,14 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm text-slate-700">
                 <div>
                     <label className="block mb-2">First Name</label>
-                    <input name="firstname" required defaultValue={initialData?.firstName}/>
+                    <input name="firstName" required defaultValue={initialData?.firstName}/>
                 </div>
                 <div>
                     <label className="block mb-2">Last Name</label>
-                    <input name="lastname" required defaultValue={initialData?.lastName}/>
+                    <input name="lastName" required defaultValue={initialData?.lastName}/>
                 </div>
                 <div>
-                    <label className="block mb-2">Join Date</label>
+                    <label className="block mb-2">Phone Number</label>
                     <input name="phone" required defaultValue={initialData?.phone}/>
                 </div>
                 <div>
@@ -38,7 +55,7 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
                 </div>
                 <div className="sm:col-span-2">
                     <label className="block mb-2">Bio (optional)</label>
-                    <textarea name="bio" required defaultValue={initialData?.bio} rows={3} className="resize-none" 
+                    <textarea name="bio" defaultValue={initialData?.bio} rows={3} className="resize-none" 
                     placeholder="Brief discussion..."/>
                 </div>
             </div>
@@ -67,7 +84,7 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
                 </div>
                 <div>
                     <label className="block mb-2">Allowances</label>
-                    <input type="number" name="deduction" required min="0" step="0.01" defaultValue={initialData?.allowances || 0}/>
+                    <input type="number" name="allowances" required min="0" step="0.01" defaultValue={initialData?.allowances || 0}/>
                 </div>
                 <div>
                     <label className="block mb-2">Deductions</label>

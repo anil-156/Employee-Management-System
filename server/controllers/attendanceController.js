@@ -18,7 +18,7 @@ export const clockInOut = async(req,res)=>{
         today.setHours(0,0,0,0);
 
         const existing = await Attendance.findOne({
-            employee: employee._id,
+            employeeId: employee._id,
             date:today,
         })
 
@@ -27,7 +27,7 @@ export const clockInOut = async(req,res)=>{
         if(!existing){
             const isLate = now.getHours() >= 9 && now.getMinutes() > 0 ;
             const attendance = await Attendance.create({
-                employee: employee._id,
+                employeeId: employee._id,
                 date:today,
                 checkIn:now,
                 status: isLate ? "LATE" : "PRESENT"
@@ -81,13 +81,15 @@ export const getAttendance = async(req,res)=>{
         if(!employee) return res.status(404).json({error:"Employee not found"});
 
         const limit = parseInt(req.query.limit || 30);
-        const history = (await Attendance.find({employeeId:employee._id})).sort({date:-1}).limit(limit)
+        const history = await Attendance.find({employeeId:employee._id}).sort({date:-1}).limit(limit)
 
         return res.json({
             data:history,
             employee: {isDeleted: employee.isDeleted}
         })
     } catch (error) {
-        return res.status(500).json({error:"Failed to fetch attendance"});
+        return res.status(500).json({
+            error: "Failed to fetch attendance"
+        });
     }
 }

@@ -1,5 +1,6 @@
 import { Loader2Icon, LockIcon, X } from 'lucide-react'
 import React, { useState } from 'react'
+import api from '../api/axios'
 
 const ChangePasswordModal = ({open, onClose}) => {
 
@@ -8,6 +9,22 @@ const ChangePasswordModal = ({open, onClose}) => {
 
     const handleSubmit = async(e)=>{
         e.preventDefault();
+        setLoading(true)
+        setMessage({type:"", text:""});
+        const formData = new FormData(e.currentTarget)
+        const currentPassword = formData.get("currentPassword");
+        const newPassword = formData.get("newPassword");
+
+        try {
+            const {data} = await api.post('/auth/change-password',{currentPassword, newPassword});
+            if(!data.success) throw new Error(data.error || "Failed")
+                setMessage({type:"success", text:"Password updated successfully"})
+                e.target.reset();
+        } catch (error) {
+            setMessage({type:"error",text:error.message})
+        }finally{
+            setLoading(false);
+        }
     }
 
     if(!open) return null;
@@ -24,7 +41,7 @@ const ChangePasswordModal = ({open, onClose}) => {
                         <X className='w-5 h-5'/>
                     </button>
              </div>
-             <form className='p-6 space-y-5' onClick={handleSubmit}>
+             <form className='p-6 space-y-5' onSubmit={handleSubmit}>
                 {message.text && (
                     <div className={`p-3 rounded-xl text-sm flex items-start gap-3 ${message.type === "success" ? 
                     "bg-emerald-50 text-emerald-700 border border-emerald-200" : 
@@ -37,13 +54,13 @@ const ChangePasswordModal = ({open, onClose}) => {
                 <div>
                     <label className='block text-sm font-medium text-slate-700 mb-2'>
                         Current password
-                        <input type="passoword" name='currentPassword' required/>
+                        <input type="password" name='currentPassword' required/>
                     </label>
                 </div>
                 <div>
                     <label className='block text-sm font-medium text-slate-700 mb-2'>
                         New password
-                        <input type="passoword" name='newPassword' required/>
+                        <input type="password" name='newPassword' required/>
                     </label>
                 </div>
                 <div className='flex gap-3 pt-2'>

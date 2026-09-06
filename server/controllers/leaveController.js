@@ -34,7 +34,7 @@ export const createLeave = async(req,res)=>{
         }
 
         const leave = await leaveApplication.create({
-            employee:employee._id,
+            employeeId:employee._id,
             type,
             startDate:new Date(startDate),
             endDate:new Date(endDate),
